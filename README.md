@@ -2,13 +2,31 @@
 
 ## M.Sc. Project
 
-This project used two datasets: DFDC and CelebDF-v2 and experimented with two different models: pure CNN - EfficientNet and hybrid CNN-RNN with EfficientNet-GRU.
+This project used two deepfake datasets: DFDC and CelebDF-v2 and one real faces dataset: Youtube Faces and experimented with two different models: pure CNN - EfficientNet and hybrid CNN-RNN with EfficientNet-GRU.
 <br/>
 <br/>
+
+### Folder Structure
+
+    models/ - to put pretrained weights of the models
+    figures/ - generated for the report
+    notebook/ - notebooks used for experimenting
+    pso/ - the pso algorithm
+    src/ - source code folder
+        src/dataset - VideoDataset class and functions to load data, data transformations
+        models - classes for Efficientnet and Efficientnet-GRU
+        utils - helper functions
+        train_val_functions - functions to train and run inference in both models
 
 ### Instructions to Run
 
-1.  Download data files and unzip folders into the data folder.
+0.  **Have cuda installed. Install requirements**
+
+    ```
+    pip install requirements.txt
+    ```
+
+1.  **Download data files and unzip folders into the data folder.**
 
         1.1. Deepfake detection Dataset parts 0 to 5 in ./data/dfdc:
 
@@ -36,7 +54,7 @@ This project used two datasets: DFDC and CelebDF-v2 and experimented with two di
 
     https://www.kaggle.com/datasets/leovcunha/youtube-faces-extracted
 
-2.  The experiments were run in notebooks in the notebook folder. These can be used for testing specific parts.
+2.  **The experiments were run in notebooks in the notebook folder. These can be used for testing specific parts.**
 
     -   notebook/deepfake_detection_data_analysis.ipynb - exploratory data analysis of the datasets
     -   notebook/EfficientnetPure-dup-preliminary.ipynb - prelimiary test with pure Efficientnet Model
@@ -46,11 +64,19 @@ This project used two datasets: DFDC and CelebDF-v2 and experimented with two di
     -   notebook\manual_hyperparameter_tuning.ipynb - notebook that performs hyperparameter search
 
     -   notebook/EfficientnetPure-dup-manual_hyperparameters.ipynb - trains the pure Efficientnet Model with hyperparameters found manually
+    -   notebook/effnet-gru-manual-hyperpar.ipynb - trains the Efficientnet-GRU Model with hyperparameters found manually
 
     #### **PSO Hyperparameters**:
 
+    -   notebook/PSO_algorithm_design.ipynb - notebook used to design and test the PSO algorithm
     -   notebook/automatic_hyperparameter_pso-effnetpure.ipynb - hyperparameter search with PSO for efficientnet model
     -   notebook/automatic-hyperparameter-pso-effnetgru.ipynb - hyperparameter search with PSO for efficientnet-gru model
     -   notebook/EfficientnetPure-dup-pso_hyperparameters.ipynb - trains pure Efficientnet with hyperparameters found by PSO.
+    -   notebook/effnet-gru-pso-hyperparam.ipynb - trains Efficientnet-GRU with hyperparameters found by PSO.
 
-    -   H:\project\notebook\effnet-gru-hyperparam-optimization_pso.ipynb
+    #### **Test**:
+
+    -   notebook/test.ipynb - To run tests running inference with the weights of the training models in the datasets used or others.
+
+    Pretrained model weights can be found at:
+    https://drive.google.com/drive/folders/1MTatJuHf-Lvelvw2bnBeIcR7metPlTst?usp=share_link
