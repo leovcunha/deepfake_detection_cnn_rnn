@@ -67,7 +67,7 @@ def run_inference(model, data_loader, criterion):
         true, pred: for confusion matrix
         loss, accuracy: to measure model performance
     """
-    
+
     model.eval()
     losses = AverageMeter()
     accuracies = AverageMeter()
@@ -101,4 +101,72 @@ def run_inference(model, data_loader, criterion):
             pbar.set_description(description)
         # print("\nAccuracy {}".format(accuracies.avg))
 
+    return true, pred, losses.avg, accuracies.avg
+
+
+# train function for Efficient_GRU_Model
+def train_effnetgru(epoch, data_loader, model, criterion, optimizer):
+    model.train()
+    losses = AverageMeter()
+    accuracies = AverageMeter()
+    t = []
+    pbar = tqdm(enumerate(data_loader), total=len(data_loader))
+
+    for i, (inputs, targets) in pbar:
+
+        targets = targets.type(torch.cuda.LongTensor)
+        inputs = inputs.cuda()
+        _, outputs = model(inputs)
+
+        loss = criterion(outputs, targets.type(torch.cuda.LongTensor))
+        acc = calculate_accuracy(outputs, targets.type(torch.cuda.LongTensor))
+        losses.update(loss.item(), inputs.size(0))
+        accuracies.update(acc, inputs.size(0))
+
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # add comment to progress bar
+        description = f"epoch {epoch} loss: {losses.avg:.4f} acc: {accuracies.avg:.2f}"
+        pbar.set_description(description)
+
+    return losses.avg, accuracies.avg
+
+
+# test function for Efficient_GRU_Model
+def run_effnetgru(model, data_loader, criterion):
+    #   print('Testing')
+    model.eval()
+    losses = AverageMeter()
+    accuracies = AverageMeter()
+    pred = []
+    true = []
+    count = 0
+    with torch.no_grad():
+        pbar = tqdm(enumerate(data_loader), total=len(data_loader))
+
+        for i, (inputs, targets) in pbar:
+
+            targets = targets.cuda().type(torch.cuda.FloatTensor)
+            inputs = inputs.cuda()
+            _, outputs = model(inputs)
+            loss = torch.mean(criterion(outputs, targets.type(torch.cuda.LongTensor)))
+            acc = calculate_accuracy(outputs, targets.type(torch.cuda.LongTensor))
+            _, p = torch.max(outputs, 1)
+            true += (
+                (targets.type(torch.cuda.LongTensor))
+                .detach()
+                .cpu()
+                .numpy()
+                .reshape(len(targets))
+                .tolist()
+            )
+            pred += p.detach().cpu().numpy().reshape(len(p)).tolist()
+            losses.update(loss.item(), inputs.size(0))
+            accuracies.update(acc, inputs.size(0))
+
+            description = f" loss: {losses.avg:.4f} acc: {accuracies.avg:.2f}"
+            pbar.set_description(description)
+        print("\nAccuracy {}".format(accuracies.avg))
     return true, pred, losses.avg, accuracies.avg

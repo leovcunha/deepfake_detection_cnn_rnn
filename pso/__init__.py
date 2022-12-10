@@ -166,7 +166,7 @@ class PSO(object):
                 self.gbest_score[i] = self.gbest_score[g]
                 self.gbest[i] = self.gbest[g]
 
-    def run(self, train_model, generations: int):
+    def run(self, train_model, generations: int, adaptative=False):
         """
         Run the complete PSO generations finding best hyperparameter combination
 
@@ -184,6 +184,10 @@ class PSO(object):
         for g in range(generations):
             # fitness function
             print("generation ", g, ":\n")
+            if adaptative:
+                self.c1 = 2.5 - (2.5 - 0.5) * g / generations
+                self.c2 = 0.5 + (2.5 - 0.5) * g / generations
+
             for particle in self.particles:
                 # get params for each particle position and convert the int types
                 params = particle.pos[-1].tolist()
@@ -196,8 +200,10 @@ class PSO(object):
                 # update local and global best
                 particle.update_pbest(fitness_value)
                 self.update_gbest(g, particle.pos[-1], fitness_value)
-                print("personal best ", particle.pbest)
-                print("global best ", self.gbest)
+                print("fitness val ", fitness_value)
+                print("personal best ", particle.pbest[-1])
+                print("global best ", self.gbest[g])
+                print("best score ", self.gbest_score[g])
                 # update V
                 particle.update_V(self.w, self.c1, self.c2, self.gbest[-1])
                 particle.update_pos()

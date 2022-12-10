@@ -50,14 +50,20 @@ class Efficientnet_GRU_Model(nn.Module):
     """
 
     def __init__(
-        self, num_classes, latent_dim=1280, gru_layers=2, hidden_dim=1280, bidirectional=False
+        self,
+        num_classes,
+        dropout_rate=0.3,
+        latent_dim=1280,
+        gru_layers=2,
+        hidden_dim=1280,
+        bidirectional=False,
     ):
         super(Efficientnet_GRU_Model, self).__init__()
         model = models.efficientnet_b0(pretrained=True)  # Pretrained Efficient Net b0 Model
         self.model = nn.Sequential(*list(model.children())[:-2])
         self.gru = nn.GRU(latent_dim, hidden_dim, gru_layers, bidirectional)  # GRU Layer
         self.relu = nn.LeakyReLU()
-        self.dp = nn.Dropout(0.3)
+        self.dp = nn.Dropout(dropout_rate)
         self.linear1 = nn.Linear(1280, 256)
         self.linear2 = nn.Linear(256, 128)
         self.linear3 = nn.Linear(128, num_classes)
